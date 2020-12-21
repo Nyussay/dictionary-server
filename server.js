@@ -76,7 +76,7 @@ let loadDictionary = (file, callback) => {
     })
 };
 
-downloadDictionary('https://github.com/Nyussay/dictionary-server/blob/main/dictionary.json', 'dictionary.json', (err) => {
+downloadDictionary('https://raw.githubusercontent.com/Nyussay/dictionary-server/main/dictionary.json', 'dictionary.json', (err) => {
     if (err) {
         console.log(err);
         return;
