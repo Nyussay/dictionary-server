@@ -42,7 +42,7 @@ let dictionaryHandler = (request, response) => {
     let def = dictionary[key];
     if (!def) {
         response.writeHead(404);
-        response.end(key + ' was not found ');
+        response.end(key + ' was not found');
         return;
     }
     response.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
@@ -86,7 +86,7 @@ downloadDictionary('https://raw.githubusercontent.com/Nyussay/dictionary-server/
             console.log(err);
             return;
         }
-        console.log('ready to server');
+        console.log('ready to serve');
     });
 });
 
