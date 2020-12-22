@@ -1,13 +1,16 @@
-var fs = require('fs');
-var http = require('http');
-var https = require('https');
-var url = require('url');
+let fs = require('fs');
+let http = require('http');
+let https = require('https');
+let url = require('url');
 
-var dictionary = null;
+let dictionary = null;
 
-var dictionaryHandler = (request, response) => {
-    var u = url.parse(request.url);
+let dictionaryHandler = (request, response) => {
+    let decodedUrl = decodeURI(request.url);
+    let u = url.parse(decodedUrl);
 
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    
     if (u.pathname == '/readyz') {
         if (dictionary) {
             response.writeHead(200);
@@ -19,23 +22,36 @@ var dictionaryHandler = (request, response) => {
         return;
     }
 
-    var key = '';
-    if (u.pathname.length > 0) {
-        key = u.pathname.substr(1).toUpperCase(); 
+    if (u.pathname == '/mindmap') {
+
+        fs.readFile("./mindmap.png", function (err,data) {
+            if (err) {
+                response.writeHead(404);
+                response.end(JSON.stringify(err));
+              return;
+            }
+            response.writeHead(200, {'Content-Type': 'image/png' });
+            response.end(data)});
+            return;
     }
-    var def = dictionary[key];
+
+    let key = '';
+    if (u.pathname.length > 0) {
+        key = u.pathname.substr(1).toLowerCase(); 
+    }
+    let def = dictionary[key];
     if (!def) {
         response.writeHead(404);
-        response.end(key + ' was not found');
+        response.end(key + ' was not found ');
         return;
     }
-    response.writeHead(200);
+    response.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
     response.end(def);
 }
 
-var downloadDictionary = (url, file, callback) => {
-  var stream = fs.createWriteStream(file);
-  var req = https.get(url, function(res) {
+let downloadDictionary = (url, file, callback) => {
+  let stream = fs.createWriteStream(file);
+  let req = https.get(url, function(res) {
     res.pipe(stream);
     stream.on('finish', function() {
       stream.close(callback);
@@ -47,7 +63,7 @@ var downloadDictionary = (url, file, callback) => {
   });
 };
 
-var loadDictionary = (file, callback) => {
+let loadDictionary = (file, callback) => {
     fs.readFile(file, (err, data) => {
         if (err) {
             console.log(err);
@@ -70,7 +86,7 @@ downloadDictionary('https://raw.githubusercontent.com/Nyussay/dictionary-server/
             console.log(err);
             return;
         }
-        console.log('ready to serve');
+        console.log('ready to server');
     });
 });
 
